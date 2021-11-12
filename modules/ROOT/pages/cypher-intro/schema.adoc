@@ -9,7 +9,7 @@
 
 First create some data to use for our examples:
 
-[source, cypher, indent=0]
+[source,  cypher, indent=0]
 ----
 CREATE (forrestGump:Movie {title: 'Forrest Gump', released: 1994})
 CREATE (robert:Person:Director {name: 'Robert Zemeckis', born: 1951})
@@ -40,7 +40,7 @@ The following query creates an index to speed up finding actors by name in the d
 
 [source, cypher, role="noplay"]
 ----
-CREATE INDEX example_index_1 FOR (a:Actor) ON (a.name)
+CREATE INDEX example_index_1 example_index_1 FOR (a:Actor) ON (a.name)
 ----
 
 In most cases it is not necessary to specify indexes when querying for data, as the appropriate indexes will be used automatically.
@@ -48,7 +48,7 @@ In most cases it is not necessary to specify indexes when querying for data, as 
 [NOTE]
 ====
 It is possible to specify which index to use in a particular query, using _index hints_.
-This is one of several options for query tuning, described in detail in xref:5.0@cypher-manual:ROOT:query-tuning/index.adoc#query-tuning[Cypher manual -> Query tuning].
+This is one of several options for query tuning, described in detail in xref:4.4@cypher-manual:ROOT:query-tuning/index.adoc#query-tuning[Cypher manual -> Query tuning].
 ====
 
 For example, the following query will automatically use the `example_index_1`:
@@ -66,7 +66,7 @@ Therefore that node will not be added to the index.
 
 [source, cypher, role="noplay"]
 ----
-CREATE INDEX example_index_2 FOR (a:Actor) ON (a.name, a.born)
+CREATE INDEX example_index_2 example_index_2 FOR (a:Actor) ON (a.name, a.born)
 ----
 
 You can query a database with `SHOW INDEXES` to find out what indexes are defined.
@@ -90,7 +90,7 @@ Rows: 2
 
 [TIP]
 ====
-Learn more about indexes in xref:5.0@cypher-manual:ROOT:indexes-for-full-text-search/index.adoc#administration-indexes-fulltext-search[Cypher Manual -> Indexes].
+Learn more about indexes in xref:4.4@cypher-manual:ROOT:indexes-for-full-text-search/index.adoc#administration-indexes-fulltext-search[Cypher Manual -> Indexes].
 ====
 
 
@@ -100,16 +100,6 @@ Learn more about indexes in xref:5.0@cypher-manual:ROOT:indexes-for-full-text-se
 Constraints are used to make sure that the data adheres to the rules of the domain.
 For example:
 
-[quote]
-_____
-"If a node has a label of `Actor` and a property of `name`, then the value of `name` must be unique among all nodes that have the `Actor` label".
-_____
-
-.Uniqueness constraint
-======
-This example shows how to create a constraint for nodes that have the label `Movie` and the property `title`.
-The constraint specifies that the `title` property must be unique.
-
 Adding the unique constraint will implicitly add an index on that property.
 If the constraint is dropped, but the index is still needed, the index will have to be created explicitly.
 
@@ -117,6 +107,15 @@ If the constraint is dropped, but the index is still needed, the index will have
 ----
 CREATE CONSTRAINT constraint_example_1 FOR (movie:Movie) REQUIRE movie.title IS UNIQUE
 ----
+
+[NOTE]
+====
+The syntax was changed in Neo4j 4.4, the old syntax is:
+[source, cypher, role="noheader", subs="macros"]
+----
++CREATE CONSTRAINT constraint_example_1 ON (movie:Movie) ASSERT movie.title IS UNIQUE+ label:deprecated[]
+----
+====
 ======
 
 
@@ -132,7 +131,7 @@ This example shows a Cypher query that returns the constraints that has been def
 
 [source, cypher, role="noplay"]
 ----
-SHOW CONSTRAINTS YIELD id, name, type, entityType, labelsOrTypes, properties, ownedIndexId
+SHOW CONSTRAINTS YIELD id, name, type, entityType, labelsOrTypes, properties, ownedIndexId YIELD id, name, type, entityType, labelsOrTypes, properties, ownedIndexId
 ----
 
 [source, output, role="noheader"]
@@ -146,6 +145,7 @@ Rows: 1
 +-----------------------------------------------------------------------------------------------------+
 ----
 ======
+======
 
 [NOTE]
 ====
@@ -155,5 +155,8 @@ Additional constraints are available for Neo4j Enterprise Edition.
 
 [TIP]
 ====
+[TIP]
+====
 Learn more about constraints in xref:5.0@cypher-manual:ROOT:constraints/index.adoc#administration-constraints[Cypher manual -> Constraints].
+====
 ====
